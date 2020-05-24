@@ -9,7 +9,7 @@ A template repository for reproducible research projects
 1. [Step 1](https://sjessa.github.io/rr/analysis/01-first_step.html) of an analysis, which generates some output
 2. [Step 2](https://sjessa.github.io/rr/analysis/02-second_step.html) of an analysis, which loads the output from document `01`
 
-### Features
+### Features (#features)
 
 * A header with the project source link
 * :gear: A configuration section at the beginning of each Rmd, which specifies the 
@@ -54,12 +54,12 @@ _Load output_
 ![](include/img/echo_fig_html.png)
 
 
-### Requirements
+### Requirements (#reqs)
 
 * :package: [`{here}`](https://cran.r-project.org/web/packages/here/index.html) package
 * :package: [`{readr}`](https://readr.tidyverse.org/) package
 
-### Usage:
+### Usage: (#usage)
 
 1. On GitHub, click the "Use this template button"
 
