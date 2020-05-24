@@ -1,3 +1,4 @@
+// https://github.com/lindeloev/tests-as-linear/blob/master/include/hideOutput.js
 $(document).ready(function() {
 
   $chunks = $('.fold');
