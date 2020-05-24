@@ -4,6 +4,11 @@
 A template repository for reproducible research projects  
 :pencil2: :chart_with_upwards_trend: :notebook: :bar_chart: :microscope: :computer: :octocat:
 
+### Check out the example rendered HTML files
+
+1. [Step 1](https://sjessa.github.io/rr/analysis/01-first_step.html) of an analysis, which generates some output
+2. [Step 2](https://sjessa.github.io/rr/analysis/02-second_step.html) of an analysis, which loads the output from document `01`
+
 ### Features
 
 * A header with the project source link
