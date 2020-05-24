@@ -1,6 +1,6 @@
 ---
 title: "01 - Analysis 1"
-author: "Selin Jessa"
+author: "Selin Jessa [[selin.jessa@mail.mcgill.ca](mailto:selin.jessa@mail.mcgill.ca)]"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -15,100 +15,24 @@ output:
       after_body:  ../include/footer.html
 ---
 
-<!-- FRONT MATTER -->
+<!-- FRONT MATTER, insert configuration info -->
 
-<!-- Load custom CSS/JS for code folding -->
-<link rel="stylesheet" type="text/css" href="../include/hideOutput.css">
-<script src="../include/hideOutput.js"></script>
+```{r header, echo = FALSE, results = 'asis', warning = FALSE}
 
-***
-
-# Configuration
-
-Configuration of project directory & analysis outputs:
-
-<details><summary>Show full config</summary>
-
-```{r config, warning = FALSE}
-
-library(here)
-source(here("rr_helpers.R"))
-
-# Set up outputs
-
+# Index of the document
 # ...determines name of the subfolder of `outputs` and `figures`
-doc_id     <- "01"
+doc_id <- "01"
 
-# ...specify where to save outputs
-out        <- here("output", doc_id); dir.create(out, recursive = TRUE)
-figout     <- here("figures", doc_id, "/")
-cache      <- paste0("~/tmp/", basename(here()), "/", doc_id, "/")
+suppressMessages(library(here))
 
-```
-
-</details>
-
-The root directory of this project is:
-
-```{r here, echo = FALSE, cache = FALSE}
-
-message(here())
-
-```
-
-Outputs and figures will be saved at these paths, relative to project root:
-
-```{r print_out_paths, echo = FALSE, cache = FALSE}
-
-message(path_from_here(out))
-message(path_from_here(figout))
-
-```
-
-```{r setup, include = FALSE}
-
-# Code to print the location of output / figures, relative to the root
-# Usage: set "echo_fig = TRUE" or "echo_out = TRUE" in knitr chunk options
-# via https://gist.github.com/Thell/5827832
-knitr::knit_hooks$set( echo_fig = function(before, options, envir) {
-    if ( before ) {
-        # Do nothing
-    } else sprintf('<br><span style="color:#0d00ff">~[figure @ *%s*]~</span>',
-                   paste0(
-                       path_from_here(figout),
-                       options$label, "...") )
-})
-
-knitr::knit_hooks$set( echo_out = function(before, options, envir) {
-    if ( before ) {
-        # Do nothing
-    } else sprintf('<br><span style="color:#0d00ff">~[output @ *%s*]~</span>',
-                   paste0(path_from_here(out),
-                          "/",
-                          options$label) )
-})
-
-# Set knitr options
-knitr::opts_chunk$set(message = TRUE,
-                      warning = FALSE,
-                      error = FALSE,
-                      cache = TRUE,
-                      cache.path = cache,
-                      fig.path = figout,
-                      fig.keep = "all",
-                      dev = c("png", "pdf"),
-                      cache.lazy = FALSE)
-
-options(knitr.table.format = "html") 
-
-# Expand the width for more plotting area
-knitr::opts_knit$set(width = 1600)
+# Knit child document with header
+res <- knitr::knit_child(here("include", "header.Rmd"), envir = environment(), quiet = TRUE)
+cat(res, sep = '\n')
 
 ```
 
 <!-- END OF FRONT MATTER -->
 
-***
 
 # Overview
 
@@ -125,13 +49,12 @@ library(tidyverse)
 
 ```{asis, echo = TRUE}
 
-Here is a note to self. This markdown code is contained in a check, 
+Here is a note to self. This markdown code is contained in a chunk, 
 with visibility controlled by the `echo` chunk option.
 
 Change echo to TRUE or FALSE to display/hide this chunk.
 
 ```
-
 
 
 # Analysis
@@ -141,7 +64,7 @@ Change echo to TRUE or FALSE to display/hide this chunk.
 This part of the analysis generates a figure; we can use the chunk option
 `echo_fig = TRUE` to print its output path.
 
-```{r pressure, echo_fig = TRUE, cache = FALSE}
+```{r pressure, echo_fig = TRUE}
 
 mtcars %>% 
     ggplot(aes(x = mpg, y = cyl)) +
@@ -167,39 +90,14 @@ rr_write_tsv(df = mtcars,
 ```
 
 
+<!-- END MATTER, insert reproducibility info -->
 
-***
+```{r footer, echo = FALSE, results = 'asis', warning = FALSE, cache = FALSE}
 
-# Reproducibility
-
-
-This document was last rendered on:
-
-```{r time, echo = FALSE, cache = FALSE}
-
-message(Sys.time())
+# Knit child document with header
+res <- knitr::knit_child(here("include", "footer.Rmd"), envir = environment(), quiet = TRUE)
+cat(res, sep = '\n')
 
 ```
 
-The git repository and last commit:
-
-```{r repo, echo = FALSE, cache = FALSE}
-
-git2r::repository()
-
-```
-
-Session info:
-<details>
-
-```{r sinfo, cache = FALSE, echo = FALSE}
-
-if ("devtools" %in% installed.packages()) {
-    devtools::session_info()
-} else sessionInfo()
-
-```
-
-</details>
-
-***
+<!-- END OF END MATTER -->

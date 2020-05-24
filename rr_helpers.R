@@ -1,4 +1,10 @@
 
+rr_setup <- function() {
+    
+    
+    
+}
+
 #' The here() function always returns a full path from the root directory
 #' This function returns a path from the project root for less clutter
 #' and greater portability
