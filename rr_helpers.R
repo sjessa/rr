@@ -9,6 +9,7 @@ rr_initialize_cleanup <- function(dry_run = FALSE) {
     
     require(here)
     
+    # For Yes/No prompts, treat a selection of 1 as TRUE, and 2 as FALSE
     s2l <- function(x) ifelse(x == 1, TRUE, FALSE)
     
     # Delete the example documents & HTMLs
@@ -26,6 +27,20 @@ rr_initialize_cleanup <- function(dry_run = FALSE) {
     if (del_out & !dry_run) file.remove(Sys.glob(here("output/01/mtcars*")),
                              Sys.glob(here("figures/01/pressure-1*")),
                              Sys.glob(here("figures/02/figure2-*")))
+    
+    # Clear README file from rr repository
+    del_readme <- s2l(menu(c("Yes", "No"), title = "Clear README.md?"))
+    if (del_readme & !dry_run) {
+      file.remove(here("README.md"))
+      file.create(here("README.md"))
+    }
+    
+    # Delete the images that are used for demo in the rr repository
+    del_img <- s2l(menu(c("Yes", "No"), title = "Delete images used in rr repository README?"))
+    # ... except for the lab logo, needed in the template
+    img_paths <- setdiff(list.files(here("include/img"), full.names = TRUE),
+                         here("include/img/kleinman_lab_logo.png"))
+    if (del_img & !dry_run) file.remove(img_paths)
     
 }
 
