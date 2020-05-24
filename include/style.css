@@ -40,7 +40,7 @@ a:hover, a:focus {
 #TOC {
   position: fixed;
   left: 0;
-  top: 25px;
+  top: 50px;
   width: 275px;
   height: 100%;
   overflow:auto;

@@ -10,6 +10,9 @@ output:
     toc_depth: 4
     number_sections: true
     df_print: paged
+    includes:
+      before_body: include/header.html
+      after_body:  include/footer.html
 ---
 
 <!-- FRONT MATTER -->
@@ -166,7 +169,7 @@ mtcars %>%
 
 This part of the analysis saves the `mtcars` dataset from R as a TSV.
 By matching the chunk name to the output file name, we can then use
-the `echo_out = TRUE` chunk option to show the path to the fil.
+the `echo_out = TRUE` chunk option to show the path to the file.
 
 ```{r mtcars.tsv, echo_out = TRUE}
 
@@ -191,6 +194,14 @@ message(Sys.time())
 
 ```
 
+The git repository and last commit:
+
+```{r repo, echo = FALSE, cache = FALSE}
+
+git2r::repository()
+
+```
+
 Session info:
 <details>
 
@@ -204,27 +215,4 @@ if ("devtools" %in% installed.packages()) {
 
 </details>
 
-<!-- FOOTER -->
-
 ***
-
-<center>
-```{r logo, echo = FALSE, out.width = '20%', out.height = '20%'}
-
-knitr::include_graphics(here::here("include", "kleinman_lab_logo.png"))
-
-```
-</center>
-
-<!-- Add icon library -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-<p style="text-align: center;">
-A project of the Kleinman Lab at McGill University.
-<br>
-<a href="https://functionalgenomics.ca/" class="fa fa-home"></a>
-<a href="https://github.com/fungenomics/" class="fa fa-github"></a>
-</p>
-
-
-<br>
