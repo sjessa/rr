@@ -4,12 +4,18 @@
 A template repository for reproducible research projects  
 :pencil2: :chart_with_upwards_trend: :notebook: :bar_chart: :microscope: :computer: :octocat:
 
-### Check out the example rendered HTML files
+Check out the example rendered HTML files
 
 1. [Step 1](https://sjessa.github.io/rr/analysis/01-first_step.html) of an analysis, which generates some output
 2. [Step 2](https://sjessa.github.io/rr/analysis/02-second_step.html) of an analysis, which loads the output from document `01`
 
-### Features (#features)
+### Contents:
+
+* [Features](https://github.com/sjessa/rr#features-features)
+* [Requirements](https://github.com/sjessa/rr#requirements-reqs)
+* [Usage](https://github.com/sjessa/rr#usage-usage)
+
+### Features
 
 * A header with the project source link
 * :gear: A configuration section at the beginning of each Rmd, which specifies the 
@@ -54,12 +60,12 @@ _Load output_
 ![](include/img/echo_fig_html.png)
 
 
-### Requirements (#reqs)
+### Requirements
 
 * :package: [`{here}`](https://cran.r-project.org/web/packages/here/index.html) package
 * :package: [`{readr}`](https://readr.tidyverse.org/) package
 
-### Usage: (#usage)
+### Usage:
 
 1. On GitHub, click the "Use this template button"
 
