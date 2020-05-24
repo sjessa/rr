@@ -1,7 +1,25 @@
 
 rr_setup <- function() {
     
+    require(here)
     
+    s2l <- function(x) ifelse(x == 1, TRUE, FALSE)
+    
+    # Delete the example documents & HTMLs
+    del_ex <- s2l(menu(c("Yes", "No"), title = paste0("Delete example Rmds and corresponding HTMLs? i.e.\n",
+                                                      "rm analysis/01-first_step.{Rmd,html}\n",
+                                                      "rm analysis/02-second_step.{Rmd,html}")))
+    if (del_ex) file.remove(Sys.glob(here("analysis/01-first_step.*")),
+                            Sys.glob(here("analysis/02-second_step.*")))
+    
+    # Delete the example output / figures
+    del_out <- s2l(menu(c("Yes", "No"), title = paste0("Delete example outputs/figures? i.e.\n",
+                                                       "rm output/01/mtcars.{tsv,desc}\n",
+                                                       "rm figures/01/pressure-1.{png,pdf}\n",
+                                                       "rm figures/02/figure2-*")))
+    if (del_out) file.remove(Sys.glob(here("output/01/mtcars*")),
+                             Sys.glob(here("figures/01/pressure-1*")),
+                             Sys.glob(here("figures/02/figure-2*")))
     
 }
 
