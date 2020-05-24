@@ -11,9 +11,9 @@ Check out the example rendered HTML files
 
 ### Contents:
 
-* [Features](https://github.com/sjessa/rr#features-features)
-* [Requirements](https://github.com/sjessa/rr#requirements-reqs)
-* [Usage](https://github.com/sjessa/rr#usage-usage)
+* [Features](https://github.com/sjessa/rr#features)
+* [Requirements](https://github.com/sjessa/rr#requirements)
+* [Usage](https://github.com/sjessa/rr#usageU)
 
 ### Features
 
