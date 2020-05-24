@@ -2,6 +2,8 @@
 
 ***
 
+<!-- Create reproducibility receipt e.g. https://github.com/benmarwick/rrtools/blob/master/inst/templates/paper.Rmd -->
+
 # Reproducibility
 
 This document was last rendered on:

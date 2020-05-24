@@ -1,5 +1,11 @@
 
-rr_setup <- function() {
+# Initialization ----
+
+#' Clean-up the rr repository of example files for initialization
+#' 
+#' A helper function for cleaning up a repository generated from the rr
+#' template, by removing the example documents & their outputs
+rr_initialize_cleanup <- function(dry_run = FALSE) {
     
     require(here)
     
@@ -7,21 +13,79 @@ rr_setup <- function() {
     
     # Delete the example documents & HTMLs
     del_ex <- s2l(menu(c("Yes", "No"), title = paste0("Delete example Rmds and corresponding HTMLs? i.e.\n",
-                                                      "rm analysis/01-first_step.{Rmd,html}\n",
-                                                      "rm analysis/02-second_step.{Rmd,html}")))
-    if (del_ex) file.remove(Sys.glob(here("analysis/01-first_step.*")),
+                                                      "  rm analysis/01-first_step.{Rmd,html}\n",
+                                                      "  rm analysis/02-second_step.{Rmd,html}")))
+    if (del_ex & !dry_run) file.remove(Sys.glob(here("analysis/01-first_step.*")),
                             Sys.glob(here("analysis/02-second_step.*")))
     
     # Delete the example output / figures
     del_out <- s2l(menu(c("Yes", "No"), title = paste0("Delete example outputs/figures? i.e.\n",
-                                                       "rm output/01/mtcars.{tsv,desc}\n",
-                                                       "rm figures/01/pressure-1.{png,pdf}\n",
-                                                       "rm figures/02/figure2-*")))
-    if (del_out) file.remove(Sys.glob(here("output/01/mtcars*")),
+                                                       "  rm output/01/mtcars.{tsv,desc}\n",
+                                                       "  rm figures/01/pressure-1.{png,pdf}\n",
+                                                       "  rm figures/02/figure2-*")))
+    if (del_out & !dry_run) file.remove(Sys.glob(here("output/01/mtcars*")),
                              Sys.glob(here("figures/01/pressure-1*")),
-                             Sys.glob(here("figures/02/figure-2*")))
+                             Sys.glob(here("figures/02/figure2-*")))
     
 }
+
+
+#' Initialize a reproducible research repository
+#' 
+#' A function to setup a new repository from the rr template, by customizing
+#' templates / headers with author info and project info. Interactively prompts
+#' user for permission to delete files, and for the following information to
+#' update templates:
+#'  * Author name(s)
+#'  * Contact email address
+#'  * Short project name
+#'  * Link to repository on GitHub (or other link)
+#'
+#' @param dry_run Logical, whether to actually perform the changes. Default: FALSE
+#'
+#' @return Nothing
+rr_initalize <- function(dry_run = FALSE) {
+    
+    require(here)
+    
+    if (dry_run) message("Performing a dry-run of repository initialization...\n")
+    
+    rr_initialize_cleanup(dry_run = dry_run)
+    
+    # Replace the author name
+    name <- readline("Author name(s): ") 
+    # ....Construct sed command
+    cmd_update_template_name <- paste0("sed -i '' '3s/Selin Jessa/", name, "/g' ", here("include/template.Rmd"))
+    print(cmd_update_template_name)
+    # ...Execute command
+    if (!dry_run) system(cmd_update_template_name)
+    
+    # Replace author email
+    email <- readline("Contact email: ")
+    cmd_update_template_email <- paste0("sed -i '' '3s/selin.jessa@mail.mcgill.ca/", email, "/g' ", here("include/template.Rmd"))
+    print(cmd_update_template_email)
+    if (!dry_run) system(cmd_update_template_email)
+    
+    # Replace project name
+    project_name <- readline("Short project name: ")
+    cmd_update_proj_name <- paste0("sed -i '' 's/rr project/", project_name, " project/g' ", here("include/header.html"))
+    print(cmd_update_proj_name)
+    if (!dry_run) system(cmd_update_proj_name)
+    
+    # Replace github source link
+    github_link <- readline("Link to GitHub repository: ")
+    cmd_update_proj_link <- paste0("sed -i '' 's#https://github.com/sjessa/rr/#", github_link, "#g' ", here("include/header.html"))
+    print(cmd_update_proj_link)
+    if (!dry_run) system(cmd_update_proj_link)
+    
+    message("\nInitialization complete. To start an analysis, copy ",
+            here("includes/template.Rmd"),
+            " to the analysis folder.")
+    
+}
+
+
+# Helpers ----
 
 #' The here() function always returns a full path from the root directory
 #' This function returns a path from the project root for less clutter
@@ -35,11 +99,31 @@ path_from_here <- function(path) {
     
 }
 
+
+# Savers / loaders ----
+
 rr_save <- function() {
     
     
 }
 
+
+#' A wrapper function for writing a description with a TSV
+#'
+#' This funcion simply wraps readr::write_tsv, but also saves a user-provided
+#' description alongside the tsv with the same filename but extension ".desc"
+#'
+#' @param df Data frame to write to tsv
+#' @param path Path for output tsv file, as returned by here e.g. here("my/file.tsv")
+#' @param desc String, brief description of file contents
+#' @param verbose Logical, whether to print .desc file path to console
+#'
+#' @return Nothing
+#'
+#' @examples
+#' mtcars %>% 
+#'     rr_write_tsv(path = here("output/01/mtcars.tsv),
+#'                  desc = "The mtcars dataset, verbatim")
 rr_write_tsv <- function(df, path, desc, verbose = TRUE) {
     
     # Need readr to simplify table writing
@@ -57,15 +141,43 @@ rr_write_tsv <- function(df, path, desc, verbose = TRUE) {
     
 }
 
+
+#' A wrapper function for saving source data along side a ggplot
+#' 
+#' This funcion simply wraps ggplot2::ggplot, but also saves the input data
+#' alongside the figure, with the same filename but extension ".source_data.tsv".
+#' This is extremely useful for being able to quickly extract the data needed to
+#' regenerate the figure, sometimes also required for papers.
+#' 
+#' NOTE: Saving soure data only works if a ggplot is generated within a code chunk and the
+#' document rendered by RMarkdown, otherwise, a warning is emitted and the function
+#' proceeds with ggplot code. 
+#'
+#' @param df Data frame, input to ggplot2
+#' @param plot_num Numeric, index of plot within R Markdown chunk, used to determine
+#' the filname of the figure when the document is rendered
+#' @param ... Additional parameters passed to ggplot2::ggplot, e.g. "aes(x = mpg, y = cyl)"
+#'
+#' @return A ggplot2 object, to which additional gg elements can be added with +,
+#' same as ggplot2::ggplot
+#' @export
+#'
+#' @examples
+#' mtcars2 %>% 
+#'     rr_ggplot(1, aes(x = disp, y = wt)) +
+#'     geom_line() +
+#'     theme_bw()
 rr_ggplot <- function(df, plot_num, ...) {
     
     require(ggplot2)
     require(readr)
     
+    if (!interactive()) {
+    
     # TODO: Currently, it's not possible to not specify plot_num, because
     # it messes up the dots (...) which are passed to ggplot, so this if statement
     # is never evaluated, an error is thrown instead:
-
+    
     # If the plot # is not provided
     if (missing(plot_num)) {
         
@@ -89,18 +201,53 @@ rr_ggplot <- function(df, plot_num, ...) {
     
     # Output a message with path to source data file
     message("...writing source data of ggplot to ", path_from_here(src_path))
-
+    
+    } else {
+        
+        warning("!! This function is being run in an interactive session ",
+                "and the source data is NOT being saved. Render the document ",
+                "to save source data.")
+        
+    }
+    
     # Proceed with ggplot
     ggplot(data = df, ...)
     
 }
+
 
 rr_load <- function() {
     
     
 }
 
+
+#' A wrapper function for reading a TSV along with its metadata & description
+#' 
+#' This funcion simply wraps readr::read_tsv, but at the same time, prints some
+#' information about the file to help with reproducibility & dependency tracking:
+#'  * The description of the file, if one exists at the same filepath with ".desc" extension
+#'  * The timestamp for when the file was last modified
+#'  * The script that generated the file, under the assumption it was generated
+#'    by a script within the analysis folder of this repository
+#'    
+#' NOTE: for files NOT produced in this repositoy, this function is not receommonded.
+#' 
+#' To produce a toggle button showing/hiding the output of this function in an R Markdown
+#' HTML report, wrap the chunk in <div class="fold o"></div>
+#' (in which case the outpout is hidden by default)
+#'
 #' @param path String, as returned by here::here("blah")
+#' @param ... Additional parameters passed to readr::read_tsv()
+#' 
+#' @return A tibble, same as readr::read_tsv
+#' 
+#' @examples
+#' mtcars %>% 
+#'     rr_write_tsv(path = here("output/01/mtcars.tsv),
+#'                  desc = "The mtcars dataset, verbatim")
+#'                  
+#' mtcars2 <- rr_read_tsv(path = here("output/01/mtcars.tsv))
 rr_read_tsv <- function(path, ...) {
     
     require(readr)
@@ -108,6 +255,10 @@ rr_read_tsv <- function(path, ...) {
     
     # Create the path for the description file, swapping .tsv extension to .desc
     desc_path <- gsub("tsv$", "desc", path)
+    
+    if(!file.exists(desc_path)) warning("!! No description file (.desc) found. ",
+                                        "To automatically write a description file ",
+                                        "when saving a tsv, use rr_write_tsv().")
     
     # Get the number of the analysis, e.g. "01"
     doc_idx <- stringr::str_extract(path, "(\\d)+")
@@ -123,9 +274,9 @@ rr_read_tsv <- function(path, ...) {
     # be one folding button per line of output
     # https://stackoverflow.com/questions/36699272/why-is-message-a-better-choice-than-print-in-r-for-writing-a-package
     cat(paste0(path_from_here(path), " info:\n",
-            "...description : ",   readLines(desc_path),
-            "\n...generated by: ", path_from_here(here("analysis", script)),
-            "\n...last updated: ", timestamp))
+               "...description : ",   ifelse(file.exists(desc_path), readLines(desc_path), "NOT SPECIFIED"),
+               "\n...generated by: ", path_from_here(here("analysis", script)),
+               "\n...last updated: ", timestamp))
     # e.g. output
     # /Users/selinjessa/Repos/rr/output/01/mtcars.tsv info:
     # ...description : The mtcars dataset, verbatim
