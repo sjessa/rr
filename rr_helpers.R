@@ -14,25 +14,33 @@ rr_initialize_cleanup <- function(dry_run = FALSE) {
     
     # Delete the example documents & HTMLs
     del_ex <- s2l(menu(c("Yes", "No"), title = paste0("Delete example Rmds and corresponding HTMLs? i.e.\n",
-                                                      "  rm analysis/01-first_step.{Rmd,html}\n",
-                                                      "  rm analysis/02-second_step.{Rmd,html}")))
-    if (del_ex & !dry_run) file.remove(Sys.glob(here("analysis/01-first_step.*")),
-                            Sys.glob(here("analysis/02-second_step.*")))
+                                                      "  git rm analysis/01-first_step.{Rmd,html}\n",
+                                                      "  git rm analysis/02-second_step.{Rmd,html}")))
+    if (del_ex & !dry_run) {
+        
+        system(paste(paste0("git rm ", Sys.glob(here("analysis/01-first_step.*"))), collapse = ";"))
+        system(paste(paste0("git rm ", Sys.glob(here("analysis/02-second_step.*"))), collapse = ";"))
+        
+    }
     
     # Delete the example output / figures
     del_out <- s2l(menu(c("Yes", "No"), title = paste0("Delete example outputs/figures? i.e.\n",
-                                                       "  rm output/01/mtcars.{tsv,desc}\n",
-                                                       "  rm figures/01/pressure-1.{png,pdf}\n",
-                                                       "  rm figures/02/figure2-*")))
-    if (del_out & !dry_run) file.remove(Sys.glob(here("output/01/mtcars*")),
-                             Sys.glob(here("figures/01/pressure-1*")),
-                             Sys.glob(here("figures/02/figure2-*")))
+                                                       "  git rm output/01/mtcars.{tsv,desc}\n",
+                                                       "  git rm figures/01/pressure-1.{png,pdf}\n",
+                                                       "  git rm figures/02/figure2-*")))
+    if (del_out & !dry_run) {
+        
+        system(paste(paste0("git rm ", Sys.glob(here("output/01/mtcars*"))), collapse = ";"))
+        system(paste(paste0("git rm ", Sys.glob(here("figures/01/pressure-1*"))), collapse = ";"))
+        system(paste(paste0("git rm ", Sys.glob(here("figures/02/figure2-*"))), collapse = ";"))
+        
+    }
     
     # Clear README file from rr repository
     del_readme <- s2l(menu(c("Yes", "No"), title = "Clear README.md?"))
     if (del_readme & !dry_run) {
-      file.remove(here("README.md"))
-      file.create(here("README.md"))
+        file.remove(here("README.md"))
+        file.create(here("README.md"))
     }
     
     # Delete the images that are used for demo in the rr repository
@@ -40,7 +48,11 @@ rr_initialize_cleanup <- function(dry_run = FALSE) {
     # ... except for the lab logo, needed in the template
     img_paths <- setdiff(list.files(here("include/img"), full.names = TRUE),
                          here("include/img/kleinman_lab_logo.png"))
-    if (del_img & !dry_run) file.remove(img_paths)
+    if (del_img & !dry_run) {
+        
+        system(paste(paste0("git rm ", img_paths), collapse = ";"))
+        
+    }
     
 }
 
@@ -59,7 +71,7 @@ rr_initialize_cleanup <- function(dry_run = FALSE) {
 #' @param dry_run Logical, whether to actually perform the changes. Default: FALSE
 #'
 #' @return Nothing
-rr_initalize <- function(dry_run = FALSE) {
+rr_initialize <- function(dry_run = FALSE) {
     
     require(here)
     
@@ -81,11 +93,19 @@ rr_initalize <- function(dry_run = FALSE) {
     print(cmd_update_template_email)
     if (!dry_run) system(cmd_update_template_email)
     
-    # Replace project name
-    project_name <- readline("Short project name: ")
+    # Replace project name in header,
+    # and change name of .Rproj file
+    # and add to README
+    project_name <- readline("Short project name (no spaces or slashes), e.g. matching GitHub repo name: ")
     cmd_update_proj_name <- paste0("sed -i '' 's/rr project/", project_name, " project/g' ", here("include/header.html"))
     print(cmd_update_proj_name)
-    if (!dry_run) system(cmd_update_proj_name)
+    cmd_update_Rproj_name <- paste0("mv ", here("rr.Rproj"), project_name, ".Rproj")
+    print(cmd_update_Rproj_name)
+    if (!dry_run) {
+        system(cmd_update_proj_name)
+        system(cmd_update_Rproj_name)
+        writeLines(project_name, here("README.md"))
+    }
     
     # Replace github source link
     github_link <- readline("Link to GitHub repository: ")
@@ -188,35 +208,35 @@ rr_ggplot <- function(df, plot_num, ...) {
     require(readr)
     
     if (!interactive()) {
-    
-    # TODO: Currently, it's not possible to not specify plot_num, because
-    # it messes up the dots (...) which are passed to ggplot, so this if statement
-    # is never evaluated, an error is thrown instead:
-    
-    # If the plot # is not provided
-    if (missing(plot_num)) {
         
-        plot_num <- 1
-        # This is beacuse plots are named by their number in each chunk, but
-        # that number cannot be accessed by this function
-        warning("!! If more than one ggplot is generated in this chunk with rr_ggplot(),",
-                "only the source data for the first one will be saved.",
-                "Pass plot # explicitly to plot_num argument to correct this.")
+        # TODO: Currently, it's not possible to not specify plot_num, because
+        # it messes up the dots (...) which are passed to ggplot, so this if statement
+        # is never evaluated, an error is thrown instead:
         
-    }
-    
-    # Get the figure path for the current chunk, without file extensions
-    # https://github.com/yihui/knitr/issues/73#issuecomment-3514096
-    fig_path <- knitr::fig_path(number = plot_num)
-    
-    # Make a path for the source data by appending a suffix to the figure path,
-    # and write source data there as a TSV
-    src_path <- paste0(fig_path, ".source_data.tsv")
-    write_tsv(df, src_path)
-    
-    # Output a message with path to source data file
-    message("...writing source data of ggplot to ", path_from_here(src_path))
-    
+        # If the plot # is not provided
+        if (missing(plot_num)) {
+            
+            plot_num <- 1
+            # This is beacuse plots are named by their number in each chunk, but
+            # that number cannot be accessed by this function
+            warning("!! If more than one ggplot is generated in this chunk with rr_ggplot(),",
+                    "only the source data for the first one will be saved.",
+                    "Pass plot # explicitly to plot_num argument to correct this.")
+            
+        }
+        
+        # Get the figure path for the current chunk, without file extensions
+        # https://github.com/yihui/knitr/issues/73#issuecomment-3514096
+        fig_path <- knitr::fig_path(number = plot_num)
+        
+        # Make a path for the source data by appending a suffix to the figure path,
+        # and write source data there as a TSV
+        src_path <- paste0(fig_path, ".source_data.tsv")
+        write_tsv(df, src_path)
+        
+        # Output a message with path to source data file
+        message("...writing source data of ggplot to ", path_from_here(src_path))
+        
     } else {
         
         warning("!! This function is being run in an interactive session ",
