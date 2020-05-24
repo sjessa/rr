@@ -12,6 +12,7 @@
 
 # RStudio files
 .Rproj.user/
+README.html
 
 # R Environment Variables
 .Renviron
