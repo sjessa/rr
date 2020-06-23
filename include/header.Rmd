@@ -90,6 +90,10 @@ knitr::opts_chunk$set(message = TRUE,
 
 options(knitr.table.format = "html") 
 
+# Don't use Dingbats in PDF figures, which is important
+# for being able to edit files in Illustrator
+grDevices::pdf.options(useDingbats = FALSE)
+
 # Expand the width for more plotting area
 knitr::opts_knit$set(width = 1600)
 
