@@ -13,7 +13,7 @@ Check out the example rendered HTML files
 
 * [Features](https://github.com/sjessa/rr#features)
 * [Requirements](https://github.com/sjessa/rr#requirements)
-* [Usage](https://github.com/sjessa/rr#usageU)
+* [Usage](https://github.com/sjessa/rr#usage)
 
 ### Features
 
@@ -64,6 +64,11 @@ _Load output_
 
 * :package: [`{here}`](https://cran.r-project.org/web/packages/here/index.html) package
 * :package: [`{readr}`](https://readr.tidyverse.org/) package
+* :package: [`{git2r}`](https://cran.r-project.org/web/packages/git2r/index.html) package
+
+Highly recommended:
+
+* :package: [`{renv}`](https://rstudio.github.io/renv/index.html)
 
 ### Usage:
 
