@@ -114,7 +114,7 @@ rr_initialize <- function(dry_run = FALSE) {
     if (!dry_run) system(cmd_update_proj_link)
     
     message("\nInitialization complete. To start an analysis, copy ",
-            here("includes/template.Rmd"),
+            here("include/template.Rmd"),
             " to the analysis folder.")
     
 }
