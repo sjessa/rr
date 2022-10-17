@@ -87,4 +87,10 @@ and code away!
 
 5. Whenever you make changes, commit them with git and push to the remote.
 
-6. :rocket: Profit!
+6. To create a GitHub Pages site, make sure to commit HTMLs. It's recommended
+to only do this once they are relatively final, since self-contained HTMLs can be quite large files.
+In the settings for the GitHub repository, enable pages from the `/root` directory:
+
+![](include/img/pages.png)
+
+7. :rocket: Profit!
